@@ -1,14 +1,26 @@
 package com.example.jwtapi.controller;
 
-import com.example.jwtapi.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.jwtapi.service.JwtService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/protected")
 @CrossOrigin(origins = "*")
+@Tag(name = "Endpoints Protegidos", description = "Endpoints que requieren autenticación JWT")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ProtectedController {
 
     @Autowired
@@ -18,6 +30,11 @@ public class ProtectedController {
      * Endpoint protegido que requiere autenticación JWT
      * GET /api/protected/profile
      */
+    @Operation(summary = "Obtener perfil de usuario", description = "Retorna información del perfil del usuario autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Perfil obtenido exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Error en la autenticación o token inválido")
+    })
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(HttpServletRequest request) {
         try {
@@ -35,6 +52,11 @@ public class ProtectedController {
      * Endpoint protegido para obtener información del usuario
      * GET /api/protected/user-info
      */
+    @Operation(summary = "Obtener información del usuario", description = "Retorna información básica del usuario autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Información del usuario obtenida exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Error en la autenticación o token inválido")
+    })
     @GetMapping("/user-info")
     public ResponseEntity<?> getUserInfo(HttpServletRequest request) {
         try {

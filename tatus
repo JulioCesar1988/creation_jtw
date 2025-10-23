@@ -1,0 +1,56 @@
+warning: in the working copy of 'pom.xml', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/pom.xml b/pom.xml[m
+[1mindex 75e7a1c..afb5e1e 100644[m
+[1m--- a/pom.xml[m
+[1m+++ b/pom.xml[m
+[36m@@ -84,6 +84,50 @@[m
+                 <groupId>org.springframework.boot</groupId>[m
+                 <artifactId>spring-boot-maven-plugin</artifactId>[m
+             </plugin>[m
+[32m+[m[32m            <plugin>[m
+[32m+[m[32m                <groupId>org.jacoco</groupId>[m
+[32m+[m[32m                <artifactId>jacoco-maven-plugin</artifactId>[m
+[32m+[m[32m                <version>0.8.8</version>[m
+[32m+[m[32m                <executions>[m
+[32m+[m[32m                    <execution>[m
+[32m+[m[32m                        <goals>[m
+[32m+[m[32m                            <goal>prepare-agent</goal>[m
+[32m+[m[32m                        </goals>[m
+[32m+[m[32m                    </execution>[m
+[32m+[m[32m                    <execution>[m
+[32m+[m[32m                        <id>report</id>[m
+[32m+[m[32m                        <phase>test</phase>[m
+[32m+[m[32m                        <goals>[m
+[32m+[m[32m                            <goal>report</goal>[m
+[32m+[m[32m                        </goals>[m
+[32m+[m[32m                    </execution>[m
+[32m+[m[32m                    <execution>[m
+[32m+[m[32m                        <id>check</id>[m
+[32m+[m[32m                        <goals>[m
+[32m+[m[32m                            <goal>check</goal>[m
+[32m+[m[32m                        </goals>[m
+[32m+[m[32m                        <configuration>[m
+[32m+[m[32m                            <rules>[m
+[32m+[m[32m                                <rule>[m
+[32m+[m[32m                                    <element>BUNDLE</element>[m
+[32m+[m[32m                                    <limits>[m
+[32m+[m[32m                                        <limit>[m
+[32m+[m[32m                                            <counter>INSTRUCTION</counter>[m
+[32m+[m[32m                                            <value>COVEREDRATIO</value>[m
+[32m+[m[32m                                            <minimum>0.80</minimum>[m
+[32m+[m[32m                                        </limit>[m
+[32m+[m[32m                                        <limit>[m
+[32m+[m[32m                                            <counter>BRANCH</counter>[m
+[32m+[m[32m                                            <value>COVEREDRATIO</value>[m
+[32m+[m[32m                                            <minimum>0.70</minimum>[m
+[32m+[m[32m                                        </limit>[m
+[32m+[m[32m                                    </limits>[m
+[32m+[m[32m                                </rule>[m
+[32m+[m[32m                            </rules>[m
+[32m+[m[32m                        </configuration>[m
+[32m+[m[32m                    </execution>[m
+[32m+[m[32m                </executions>[m
+[32m+[m[32m            </plugin>[m
+         </plugins>[m
+     </build>[m
+ [m
