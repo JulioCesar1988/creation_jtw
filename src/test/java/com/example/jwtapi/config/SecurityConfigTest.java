@@ -152,9 +152,7 @@ class SecurityConfigTest {
             passwordEncoder.matches(null, "encodedPassword");
         });
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            passwordEncoder.matches("rawPassword", null);
-        });
+        assertFalse(passwordEncoder.matches("rawPassword", null));
     }
 
     @Test

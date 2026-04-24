@@ -76,7 +76,10 @@ public class ProtectedController {
     private String extractTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            String token = bearerToken.substring(7);
+            if (!token.isBlank()) {
+                return token;
+            }
         }
         throw new RuntimeException("Token no encontrado en el header Authorization");
     }

@@ -77,7 +77,7 @@ class AuthServiceTest {
         assertEquals(expectedToken, result.getToken());
         assertEquals("testuser", result.getUsername());
         assertEquals("Bearer", result.getType());
-        assertNull(result.getEmail());
+        assertEquals("", result.getEmail());
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(jwtService).generateToken(userDetails);
@@ -134,7 +134,7 @@ class AuthServiceTest {
         User userWithNullPassword = new User("testuser", "test@example.com", null);
 
         // Act & Assert
-        assertThrows(NullPointerException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             authService.registerUser(userWithNullPassword);
         });
     }

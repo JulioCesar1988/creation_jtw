@@ -205,11 +205,6 @@ class JwtServiceTest {
     void generateToken_SameUserMultipleTimes_DifferentTokens() {
         // Act
         String token1 = jwtService.generateToken(userDetails);
-        try {
-            Thread.sleep(1); // Pequeña pausa para asegurar diferentes timestamps
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         String token2 = jwtService.generateToken(userDetails);
 
         // Assert

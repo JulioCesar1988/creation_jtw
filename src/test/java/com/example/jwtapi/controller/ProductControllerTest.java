@@ -1,6 +1,8 @@
 package com.example.jwtapi.controller;
 
+import com.example.jwtapi.config.SecurityConfig;
 import com.example.jwtapi.entity.Product;
+import com.example.jwtapi.service.CustomUserDetailsService;
 import com.example.jwtapi.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,15 +22,20 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
+@Import(SecurityConfig.class)
 class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
 
     @MockBean
     private ProductService productService;
@@ -145,7 +153,7 @@ class ProductControllerTest {
     void updateProduct_ExistingId_ReturnsUpdatedProduct() throws Exception {
         // Arrange
         Product updatedProduct = new Product("Laptop Pro", "Updated gaming laptop", new BigDecimal("1199.99"), 5);
-        when(productService.updateProduct(1L, any(Product.class))).thenReturn(updatedProduct);
+        when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
 
         // Act & Assert
         mockMvc.perform(put("/api/products/1")
@@ -161,7 +169,7 @@ class ProductControllerTest {
     void updateProduct_NonExistingId_ReturnsNotFound() throws Exception {
         // Arrange
         Product updatedProduct = new Product("Laptop Pro", "Updated gaming laptop", new BigDecimal("1199.99"), 5);
-        when(productService.updateProduct(999L, any(Product.class))).thenReturn(null);
+        when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
 
         // Act & Assert
         mockMvc.perform(put("/api/products/999")

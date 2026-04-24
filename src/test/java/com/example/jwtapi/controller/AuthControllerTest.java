@@ -3,13 +3,16 @@ package com.example.jwtapi.controller;
 import com.example.jwtapi.dto.JwtResponse;
 import com.example.jwtapi.dto.LoginRequest;
 import com.example.jwtapi.model.User;
+import com.example.jwtapi.config.SecurityConfig;
 import com.example.jwtapi.service.AuthService;
+import com.example.jwtapi.service.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,10 +22,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthController.class)
+@Import(SecurityConfig.class)
 class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
 
     @MockBean
     private AuthService authService;
