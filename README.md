@@ -1,225 +1,257 @@
 # API REST para Generación de JWT con Spring Boot
 
-Esta es una API REST completa para generar y manejar tokens JWT (JSON Web Tokens) usando Spring Boot y Spring Security.
+API REST completa para autenticación con JWT y gestión de productos, construida con Spring Boot 3 y Spring Security 6.
 
 ## Características
 
-- ✅ Generación de tokens JWT
-- ✅ Autenticación de usuarios
-- ✅ Registro de nuevos usuarios
-- ✅ Endpoints protegidos
-- ✅ Validación de tokens
-- ✅ Configuración de seguridad
-- ✅ Encriptación de contraseñas con BCrypt
+- Generación y validación de tokens JWT (con `jti` UUID para unicidad garantizada)
+- Autenticación y registro de usuarios
+- CRUD completo de productos con búsquedas avanzadas
+- Endpoints protegidos por JWT
+- Encriptación de contraseñas con BCrypt
+- Base de datos H2 en memoria con consola web
+- Documentación interactiva con Swagger UI
+- Soporte Docker y Docker Compose
+- CI/CD con GitHub Actions (bloquea merges si los tests fallan)
+- Cobertura de tests: **97.9% instrucciones / 95.8% ramas** (verificada con JaCoCo)
 
-## Tecnologías Utilizadas
+## Tecnologías
 
-- **Java 17**
-- **Spring Boot 3.2.0**
-- **Spring Security**
-- **JWT (JSON Web Tokens)**
-- **Maven**
-- **BCrypt para encriptación**
+| Componente | Versión |
+|---|---|
+| Java | 17 |
+| Spring Boot | 3.2.0 |
+| Spring Security | 6.x (Jakarta EE) |
+| JJWT | 0.12.3 |
+| Spring Data JPA + H2 | — |
+| SpringDoc OpenAPI | 2.2.0 |
+| JaCoCo | 0.8.8 |
+| Maven | 3.x |
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
 ```
+.github/workflows/
+└── ci.yml                              # Pipeline CI/CD (GitHub Actions)
+
 src/
-├── main/
-│   ├── java/com/example/jwtapi/
-│   │   ├── JwtApiApplication.java          # Clase principal de Spring Boot
-│   │   ├── config/
-│   │   │   └── SecurityConfig.java         # Configuración de seguridad
-│   │   ├── controller/
-│   │   │   ├── AuthController.java         # Controlador de autenticación
-│   │   │   └── ProtectedController.java   # Controlador de endpoints protegidos
-│   │   ├── dto/
-│   │   │   ├── JwtResponse.java           # DTO para respuesta JWT
-│   │   │   └── LoginRequest.java          # DTO para solicitud de login
-│   │   ├── model/
-│   │   │   └── User.java                  # Modelo de usuario
-│   │   └── service/
-│   │       ├── AuthService.java           # Servicio de autenticación
-│   │       └── JwtService.java            # Servicio JWT
-│   └── resources/
-│       └── application.properties         # Configuración de la aplicación
-└── pom.xml                               # Dependencias de Maven
+├── main/java/com/example/jwtapi/
+│   ├── config/
+│   │   ├── SecurityConfig.java         # Configuración Spring Security 6
+│   │   └── OpenApiConfig.java          # Configuración Swagger / OpenAPI
+│   ├── controller/
+│   │   ├── AuthController.java         # Login y registro
+│   │   ├── ProductController.java      # CRUD de productos
+│   │   └── ProtectedController.java    # Endpoints que requieren JWT
+│   ├── dto/
+│   │   ├── LoginRequest.java
+│   │   └── JwtResponse.java
+│   ├── entity/
+│   │   └── Product.java                # Entidad JPA
+│   ├── model/
+│   │   └── User.java                   # POJO de usuario (no persistido aún)
+│   ├── repository/
+│   │   └── ProductRepository.java
+│   └── service/
+│       ├── AuthService.java
+│       ├── JwtService.java
+│       ├── CustomUserDetailsService.java
+│       └── ProductService.java
+├── resources/
+│   ├── application.properties
+│   └── application-docker.properties
+
+src/test/                               # Suite completa: unit + integración
+├── java/...                            # 231 tests, 13 clases de test
+└── resources/application-test.properties
+
+CONTEXT.md                              # Guía de arquitectura y estilo para IAs
+Dockerfile
+docker-compose.yml
+pom.xml
 ```
 
-## Instalación y Ejecución
+## Instalación y ejecución
 
 ### Prerrequisitos
 
-- Java 17 o superior
-- Maven 3.6 o superior
+- Java 17+
+- Maven 3.6+
 
-### Pasos para ejecutar
-
-1. **Clonar o descargar el proyecto**
-
-2. **Compilar el proyecto**
-   ```bash
-   mvn clean compile
-   ```
-
-3. **Ejecutar la aplicación**
-   ```bash
-   mvn spring-boot:run
-   ```
-
-4. **La aplicación estará disponible en:**
-   ```
-   http://localhost:8080
-   ```
-
-## Endpoints de la API
-
-### Endpoints Públicos (No requieren autenticación)
-
-#### 1. Probar la API
-```http
-GET /api/auth/test
-```
-
-#### 2. Registrar un nuevo usuario
-```http
-POST /api/auth/register
-Content-Type: application/json
-
-{
-    "username": "nuevo_usuario",
-    "email": "usuario@ejemplo.com",
-    "password": "mi_password123"
-}
-```
-
-#### 3. Autenticar usuario existente
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-    "username": "admin",
-    "password": "admin123"
-}
-```
-
-### Endpoints Protegidos (Requieren token JWT)
-
-#### 4. Obtener perfil del usuario
-```http
-GET /api/protected/profile
-Authorization: Bearer <tu_token_jwt>
-```
-
-#### 5. Obtener información del usuario
-```http
-GET /api/protected/user-info
-Authorization: Bearer <tu_token_jwt>
-```
-
-## Ejemplos de Uso
-
-### 1. Registrar un nuevo usuario
+### Ejecutar localmente
 
 ```bash
-curl -X POST http://localhost:8080/api/auth/register \
+# Compilar
+mvn clean compile
+
+# Ejecutar tests
+mvn test
+
+# Levantar la aplicación
+mvn spring-boot:run
+```
+
+La aplicación queda disponible en `http://localhost:8080`.
+
+### Ejecutar con Docker
+
+```bash
+# Construir imagen y levantar contenedor
+docker-compose up --build
+
+# O usar los scripts incluidos
+./build-docker.sh        # Solo build
+./build-and-push-docker.sh  # Build + push a Docker Hub
+```
+
+## Endpoints
+
+### Autenticación (público)
+
+```http
+GET  /api/auth/test                # Health check
+POST /api/auth/register            # Registrar usuario
+POST /api/auth/login               # Login → retorna JWT
+```
+
+**Ejemplo de login:**
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{
-    "username": "juan_perez",
-    "email": "juan@ejemplo.com",
-    "password": "mi_password123"
-  }'
+  -d '{"username": "admin", "password": "admin123"}'
 ```
 
 **Respuesta:**
 ```json
 {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token": "eyJhbGciOiJIUzI1NiJ9...",
     "type": "Bearer",
-    "username": "juan_perez",
-    "email": "juan@ejemplo.com"
+    "username": "admin",
+    "email": ""
 }
 ```
 
-### 2. Autenticar usuario existente
+### Productos (público)
 
-```bash
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "admin",
-    "password": "admin123"
-  }'
+```http
+GET    /api/products                          # Listar todos
+GET    /api/products/{id}                     # Obtener por ID
+POST   /api/products                          # Crear
+PUT    /api/products/{id}                     # Actualizar completo
+DELETE /api/products/{id}                     # Eliminar
+PATCH  /api/products/{id}/stock               # Actualizar stock
+GET    /api/products/search?name=             # Buscar por nombre
+GET    /api/products/search/price?minPrice=&maxPrice=
+GET    /api/products/search/advanced?name=&maxPrice=
+GET    /api/products/stock?minStock=          # Filtrar por stock
+GET    /api/products/count?minStock=          # Contar con stock
 ```
 
-### 3. Acceder a endpoint protegido
+### Endpoints protegidos (requieren JWT)
+
+```http
+GET /api/protected/profile      # Perfil del usuario autenticado
+GET /api/protected/user-info    # Info básica del usuario
+```
 
 ```bash
 curl -X GET http://localhost:8080/api/protected/profile \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9..."
 ```
 
 ## Configuración
 
-### Variables de configuración (application.properties)
+```properties
+# JWT
+jwt.secret=<clave-en-base64>   # No commitear valores reales
+jwt.expiration=86400000        # 24 horas en ms
 
-- `server.port`: Puerto del servidor (por defecto: 8080)
-- `jwt.secret`: Clave secreta para firmar los tokens JWT
-- `jwt.expiration`: Tiempo de expiración del token en milisegundos (24 horas por defecto)
+# Base de datos H2
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.h2.console.path=/h2-console
+
+# Swagger UI
+springdoc.swagger-ui.path=/swagger-ui.html
+```
 
 ### Usuario de prueba
 
-La aplicación incluye un usuario de prueba:
 - **Username:** `admin`
 - **Password:** `admin123`
 
-## Seguridad
+## Documentación interactiva
 
-- Las contraseñas se encriptan usando BCrypt
-- Los tokens JWT tienen un tiempo de expiración configurable
-- Los endpoints protegidos requieren un token válido en el header `Authorization`
-- La configuración de seguridad está optimizada para APIs REST
+Con la aplicación corriendo, Swagger UI está disponible en:
 
-## Desarrollo
+```
+http://localhost:8080/swagger-ui.html
+```
 
-### Agregar nuevos endpoints protegidos
+La consola H2 está en:
 
-1. Crear el método en `ProtectedController`
-2. Agregar la validación del token JWT
-3. Usar `JwtService` para extraer información del token
+```
+http://localhost:8080/h2-console
+```
 
-### Personalizar la configuración JWT
+## Tests y cobertura
 
-Modifica las propiedades en `application.properties`:
-- Cambiar la clave secreta
-- Ajustar el tiempo de expiración
-- Configurar otros parámetros de seguridad
+```bash
+# Ejecutar tests
+mvn test
 
-## Solución de Problemas
+# Generar reporte HTML de cobertura
+mvn jacoco:report
+# Reporte en: target/site/jacoco/index.html
 
-### Error de compilación
-- Verificar que tienes Java 17 instalado
-- Ejecutar `mvn clean install`
+# Verificar umbrales de cobertura (falla el build si no se cumplen)
+mvn verify
+```
 
-### Error de conexión
-- Verificar que el puerto 8080 esté disponible
-- Cambiar el puerto en `application.properties`
+Umbrales configurados en JaCoCo:
 
-### Error de autenticación
-- Verificar que el token JWT sea válido
-- Comprobar que el header `Authorization` esté correctamente formateado
+| Contador | Mínimo requerido | Estado actual |
+|---|---|---|
+| Instrucciones | 80% | **97.9%** |
+| Ramas | 70% | **95.8%** |
+
+La suite incluye:
+- Tests unitarios por capa (controller, service, repository, dto, entity)
+- Tests de integración con H2 real (`@DataJpaTest`)
+- Tests de seguridad con Spring Security real (`@Import(SecurityConfig.class)`)
+
+## CI/CD
+
+El workflow `.github/workflows/ci.yml` se dispara en cada `push` y `pull request` a `main`:
+
+1. Checkout del código
+2. Setup Java 17 (Temurin) con caché de dependencias Maven
+3. `mvn compile` — falla si hay errores de compilación
+4. `mvn verify` — ejecuta tests y valida umbrales de cobertura JaCoCo
+5. Sube el reporte HTML de cobertura como artefacto (15 días de retención)
+
+Para bloquear merges automáticamente en GitHub: **Settings → Branches → Branch protection rules → Require status checks to pass → `Compile & Test`**.
+
+## Guía de arquitectura
+
+El archivo `CONTEXT.md` en la raíz define las reglas de estilo, seguridad y arquitectura que deben respetarse al modificar el proyecto (inyección por constructor, uso de records, prohibición de `WebSecurityConfigurerAdapter`, etc.). Está pensado para ser leído por desarrolladores e IAs antes de escribir código.
+
+## Solución de problemas
+
+**Error de compilación:** verificar Java 17 instalado → `java -version`
+
+**Puerto ocupado:** cambiar `server.port` en `application.properties`
+
+**Token rechazado:** verificar que el header sea `Authorization: Bearer <token>` (sin espacios extra ni token vacío)
+
+**Tests fallan localmente:** ejecutar `mvn clean test` para descartar clases compiladas obsoletas
 
 ## Contribuciones
 
-¡Las contribuciones son bienvenidas! Por favor:
-
 1. Fork el proyecto
-2. Crea una rama para tu feature
-3. Commit tus cambios
-4. Push a la rama
-5. Abre un Pull Request
+2. Crear rama para el feature
+3. Asegurarse de que `mvn verify` pasa (tests + cobertura)
+4. Abrir un Pull Request — el CI validará automáticamente
 
 ## Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+MIT
